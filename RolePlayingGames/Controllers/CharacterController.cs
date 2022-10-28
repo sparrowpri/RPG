@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RolePlayingGames.DTO.Characters;
 using RolePlayingGames.Models;
+using RolePlayingGames.Services;
 
 namespace RolePlayingGames.Controllers
 {
@@ -8,33 +10,31 @@ namespace RolePlayingGames.Controllers
     [ApiController]
     public class CharacterController : ControllerBase
     {
-        private static List<Character> characters = new List<Character>
+        private ICharacterServices _characterServices;
+
+        public CharacterController(ICharacterServices characterServices)
+
         {
-            new Character(),
-            new Character
-            {
-                Id=1,
-                Name="walder"
-            }
-        };
+            this._characterServices = characterServices;
+        }
 
         [HttpGet("GetAll")]
         //[Route("GetAll")]
-        public ActionResult<List<Character>> Get()
+        public async Task<ActionResult<ServiceResponse<List<GetCharacterDTO>>>> Get()
         {
-            return Ok(characters);
+            return Ok(await _characterServices.GetAllChar());
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Character> GetSingle(int id)
+        public async Task<ActionResult<ServiceResponse<GetCharacterDTO>>> GetSingle(int id)
         {
-            return Ok(characters.FirstOrDefault(c => c.Id == id));
+            return Ok(await _characterServices.GetCharacterById(id));
         }
         [HttpPost]
-        public ActionResult<List<Character>> AddCharacter(Character newChar)
+        public async Task<ActionResult<ServiceResponse<List<GetCharacterDTO>>>> AddCharacter(AddCharacterDTO newChar)
         {
-            characters.Add(newChar);
-            return Ok(characters);
+            
+            return Ok(await _characterServices.AddChar(newChar));
         }
     }
 }

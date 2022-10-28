@@ -40,5 +40,51 @@ namespace RolePlayingGames.Services
             return serviceResponse;
         }
 
+        public async Task<ServiceResponse<GetCharacterDTO?>> UpdateCharacter(UpdateCharacterDTO updatechar)
+        {
+            var serviceResponse = new ServiceResponse<GetCharacterDTO>();
+            try
+            {
+                var characterToUpdate = characters.FirstOrDefault(x => x.Id == updatechar.Id);
+                //characterToUpdate=_mapper.Map<Character>(updatechar);
+                characterToUpdate.Name = updatechar.Name;
+                characterToUpdate.HitPoints = updatechar.HitPoints;
+                characterToUpdate.Strength = updatechar.Strength;
+                characterToUpdate.Intelligence = updatechar.Intelligence;
+                characterToUpdate.Defence = updatechar.Defence;
+                characterToUpdate.Class = updatechar.Class;
+                serviceResponse.Data = _mapper.Map<GetCharacterDTO>(characterToUpdate);
+
+            }
+            catch (Exception ex)
+            {
+
+                serviceResponse.Success=false;
+                serviceResponse.Message = ex.Message;
+            }    
+            
+           return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<List<GetCharacterDTO>>> DeleteCharacter(int id)
+        {
+            var serviceResponse = new ServiceResponse<List<GetCharacterDTO>>();
+            try
+            {
+                var characterToDelete = characters.First(x => x.Id == id);
+                characters.Remove(characterToDelete);
+                serviceResponse.Data = characters.Select(x => _mapper.Map<GetCharacterDTO>(x)).ToList();
+
+
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success=false;
+                serviceResponse.Message = ex.Message;
+                
+            }
+            return serviceResponse;
+            
+        }
     }
 }

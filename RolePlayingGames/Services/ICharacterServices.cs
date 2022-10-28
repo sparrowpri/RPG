@@ -8,5 +8,7 @@ namespace RolePlayingGames.Services
         Task<ServiceResponse<List<GetCharacterDTO>>> AddChar(AddCharacterDTO newChar);
         Task<ServiceResponse<List<GetCharacterDTO>>> GetAllChar();
         Task<ServiceResponse<GetCharacterDTO?>> GetCharacterById(int id);
+        Task<ServiceResponse<GetCharacterDTO?>> UpdateCharacter(UpdateCharacterDTO updatechar);
+        Task<ServiceResponse<List<GetCharacterDTO>>> DeleteCharacter(int id);
     }
 }

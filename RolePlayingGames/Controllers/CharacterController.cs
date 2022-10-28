@@ -36,5 +36,26 @@ namespace RolePlayingGames.Controllers
             
             return Ok(await _characterServices.AddChar(newChar));
         }
+        [HttpPut]
+        public async Task<ActionResult<ServiceResponse<GetCharacterDTO>>> UpdateCharacter(UpdateCharacterDTO updateChar)
+        {
+            var response = await _characterServices.UpdateCharacter(updateChar);
+            if(response==null)
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
+        [HttpDelete("id")]
+        public async Task<ActionResult<ServiceResponse<List<GetCharacterDTO>>>> DeleteCharacter(int id)
+        {
+            var response=await _characterServices.DeleteCharacter(id); 
+            if(response==null)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
     }
 }

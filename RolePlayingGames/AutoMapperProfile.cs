@@ -9,8 +9,9 @@ namespace RolePlayingGames
         public AutoMapperProfile()
         {
             CreateMap<Character, GetCharacterDTO>();
-           // CreateMap<List<Character>, List<GetCharacterDTO>>();
             CreateMap<AddCharacterDTO,Character>();
+            CreateMap<UpdateCharacterDTO,Character>();
+            
         }
     }
 }

@@ -8,8 +8,11 @@ namespace RolePlayingGames.Models
         public enum RpgClass
         {
             Knight = 1,
-            Maze = 2,
-            Cleric = 3
+            KingsGuard = 2,
+            King = 3,
+            Queen=4,
+            Sellsword=5,
+
 
         }
     }

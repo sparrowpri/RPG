@@ -1,14 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using RolePlayingGames.Models;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace RolePlayingGames.Data
 {
     public class AuthRepository : IAuthRepository
     {
         private readonly DataContext _context;
-        public AuthRepository(DataContext context)
+        private readonly IConfiguration _configuration;
+
+        public AuthRepository(DataContext context,IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
         public async Task<ServiceResponse<string>> Login(string username, string password)
         {
@@ -30,7 +36,7 @@ namespace RolePlayingGames.Data
             }
             else
             {
-                response.Data = user.Id.ToString();
+                response.Data = CreateToken(user);
             }
             
             return response;
@@ -67,7 +73,7 @@ namespace RolePlayingGames.Data
             }
             return false;
         }
-        public void CreatePasswordHash(string password, out byte[] passwordHash,out byte[] passwordSalt)
+        private void CreatePasswordHash(string password, out byte[] passwordHash,out byte[] passwordSalt)
         {
             using (var hmac = new System.Security.Cryptography.HMACSHA256())
             {
@@ -76,13 +82,33 @@ namespace RolePlayingGames.Data
             };
 
         }
-        public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
             using (var hmac = new System.Security.Cryptography.HMACSHA256(passwordSalt))
             {
                 var response = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
                 return passwordHash.SequenceEqual(response);
             };
+        }
+        private string CreateToken(User user)
+        {
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
+                new Claim(ClaimTypes.Name,user.UserName)
+            };
+            SymmetricSecurityKey key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+            SigningCredentials creds=new SigningCredentials(key,SecurityAlgorithms.HmacSha512Signature);
+            SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor()
+            {
+                Subject=new ClaimsIdentity(claims),
+                Expires=DateTime.Now.AddDays(1),
+                SigningCredentials=creds
+            };
+            JwtSecurityTokenHandler handler=new JwtSecurityTokenHandler();
+            SecurityToken token =handler.CreateToken(descriptor);
+            return handler.WriteToken(token);
+
         }
     }
 }

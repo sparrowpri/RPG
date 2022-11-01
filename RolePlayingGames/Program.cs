@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using RolePlayingGames.Data;
 using RolePlayingGames.Services;
@@ -13,6 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<ICharacterServices,CharacterServices>();
+builder.Services.AddScoped<IAuthRepository,AuthRepository>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 var app = builder.Build();
 
